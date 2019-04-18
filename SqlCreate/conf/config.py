@@ -16,9 +16,3 @@ class Config:
     def getSectItems(self, name):
         return self.cf.items(name)
     
-
-
-
-myCnf = Config("../conf.ini")
-#myCnf.parseConfig()
-#print(myCnf.getSectItems("basic_conf"))

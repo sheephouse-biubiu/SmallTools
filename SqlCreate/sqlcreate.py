@@ -8,7 +8,6 @@ from conf import config
 class sqlCreate:
     def __init__(self, config_file_path):
         self.cfg = config.Config(config_file_path)
-        self.cfg.printSections()
 
     def run(self):
         print("run sql createt")
@@ -22,7 +21,7 @@ class sqlCreate:
         if csvname == "":
             print("csv file name must not null")
             return     
-        data = xlrd.open_workbook("D:\workspace\Working\SmallTools\SqlCreate\device.xlsx")
+        data = xlrd.open_workbook(csvname)
         sheet = 0
         if "sheets" in basic_conf:
             sheet = int(basic_conf["sheets"])
@@ -39,7 +38,6 @@ class sqlCreate:
                 cfg = {}
                 for key, value in self.cfg.getSectItems(Sec):
                     cfg[key] = value
-                print(cfg["savename"])
                 cfg["fileHandle"] = open(cfg["savename"],"w")
                 tableInfoItems.append(cfg)
 
