@@ -1,0 +1,24 @@
+import ConfigParser
+
+class Config:
+    def __init__(self, path):
+        self.path = path
+        self.cf = ConfigParser.ConfigParser()
+        self.cf.read(self.path)
+    
+    def printSections(self):
+        for section in self.cf.sections():
+            print(section)
+
+    def getSections(self):
+        return self.cf.sections()
+
+    def getSectItems(self, name):
+        return self.cf.items(name)
+    
+
+
+
+myCnf = Config("../conf.ini")
+#myCnf.parseConfig()
+#print(myCnf.getSectItems("basic_conf"))
