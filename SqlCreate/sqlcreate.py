@@ -37,6 +37,11 @@ class sqlCreate:
                 cfg = {}
                 for key, value in self.cfg.getSectItems(Sec):
                     cfg[key] = value
+                if "savename" not in cfg:
+					print("savename file name must not null..")
+					continue
+                if os.path.exists(cfg["savename"]):
+                    os.remove(cfg["savename"])
                 cfg["fileHandle"] = open(cfg["savename"],"w")
                 tableInfoItems.append(cfg)
 
@@ -49,12 +54,18 @@ class sqlCreate:
             else:
                 #create sql 
                 for item in tableInfoItems:
-                    sql = item["basicsql"].replace("{--table--}", item["tablename"]).replace("{--keyname--}", keyname).replace("{--key--}", key)
-                    item["fileHandle"].write(sql)
-                    item["fileHandle"].write('\n')
+                    sql = "err basicsql, please check conf.ini"
+                    if "basicsql" in item:
+                        sql = item["basicsql"].replace("{--keyname--}", keyname).replace("{--key--}", key)
+                    elif index > 1:
+                        continue
+                    if "fileHandle" in item:
+                        item["fileHandle"].write(sql)
+                        item["fileHandle"].write('\n')
             index += 1
         for item in tableInfoItems:
-            item["fileHandle"].close()        
+            if "fileHandle" in item:
+                item["fileHandle"].close()        
 
 if __name__ == "__main__":
     print("start sql create ...")
