@@ -19,8 +19,14 @@ class sqlCreate:
             csvname = basic_conf["filename"]
         if csvname == "":
             print("csv file name must not null")
-            return     
-        data = xlrd.open_workbook(csvname)
+            return
+        fileType = csvname.split(".")[1]
+        fileType=basic_conf["type"]
+        data = ""
+        if fileType == "csv":
+            data = open(csvname)
+        else:  
+            data = xlrd.open_workbook(csvname)
         sheet = 0
         if "sheets" in basic_conf:
             sheet = int(basic_conf["sheets"])
@@ -29,7 +35,7 @@ class sqlCreate:
             col = int(basic_conf["col"])
 
         #open file 
-        tableInfoItems = []
+        self.tableInfoItems = []
         for Sec in self.cfg.getSections():
             if Sec == "basic_conf":
                 continue
@@ -43,29 +49,42 @@ class sqlCreate:
                 if os.path.exists(cfg["savename"]):
                     os.remove(cfg["savename"])
                 cfg["fileHandle"] = open(cfg["savename"],"w")
-                tableInfoItems.append(cfg)
-
-        table = data.sheets()[sheet]
+                self.tableInfoItems.append(cfg)
+        table=""
+        if fileType != "csv":
+            table = data.sheets()[sheet]
         index = 0
-        keyname = ""
-        for key in table.col_values(0):
-            if 0 == index:
-                keyname = key
-            else:
-                #create sql 
-                for item in tableInfoItems:
-                    sql = "err basicsql, please check conf.ini"
-                    if "basicsql" in item:
-                        sql = item["basicsql"].replace("{--keyname--}", keyname).replace("{--key--}", key)
-                    elif index > 1:
-                        continue
-                    if "fileHandle" in item:
-                        item["fileHandle"].write(sql)
-                        item["fileHandle"].write('\n')
-            index += 1
-        for item in tableInfoItems:
+        self.keyname = ""
+        if fileType != "csv":
+            for key in table.col_values(col):
+                index = self.writeTofile(index, value)
+        else:
+            for key in data.readlines():
+                value = key.split(",")[col-1]
+                value = value.replace('\r\n','')
+                value = value.replace('\n','')
+                index = self.writeTofile(index, value)
+                
+        for item in self.tableInfoItems:
             if "fileHandle" in item:
-                item["fileHandle"].close()        
+                item["fileHandle"].close()
+
+    def writeTofile(self, index, key):
+        if 0 == index:
+            self.keyname = key
+        else:
+            #create sql 
+            for item in self.tableInfoItems:
+                sql = "err basicsql, please check conf.ini"
+                if "basicsql" in item:
+                    sql = item["basicsql"].replace("{--keyname--}", self.keyname).replace("{--key--}", key)
+                elif index > 1:
+                    continue
+                if "fileHandle" in item:
+                    item["fileHandle"].write(sql)
+                    item["fileHandle"].write('\n')
+        index += 1
+        return index
 
 if __name__ == "__main__":
     print("start sql create ...")
