@@ -44,8 +44,8 @@ class sqlCreate:
                 for key, value in self.cfg.getSectItems(Sec):
                     cfg[key] = value
                 if "savename" not in cfg:
-					print("savename file name must not null..")
-					continue
+                    print("savename file name must not null..")
+                    continue
                 if os.path.exists(cfg["savename"]):
                     os.remove(cfg["savename"])
                 cfg["fileHandle"] = open(cfg["savename"],"w")
@@ -73,6 +73,8 @@ class sqlCreate:
         if 0 == index:
             self.keyname = key
         else:
+            if "E+" in key:
+                key = "%d" % (float(key.split("E+")[0]) * pow(10,int(key.split("E+")[1])))
             #create sql 
             for item in self.tableInfoItems:
                 sql = "err basicsql, please check conf.ini"

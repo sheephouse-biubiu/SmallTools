@@ -1,9 +1,9 @@
-import ConfigParser
+import configparser
 
 class Config:
     def __init__(self, path):
         self.path = path
-        self.cf = ConfigParser.ConfigParser()
+        self.cf = configparser.ConfigParser()
         self.cf.read(self.path)
     
     def printSections(self):
